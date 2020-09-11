@@ -43,6 +43,13 @@ fu InitTagsPath()
 	if l:tagsfile != ""
 		let &tags = &tags . "," . l:tagsfile
 		let g:ltags = l:tagsfile
+
+		let l:ltagsdir = fnamemodify(g:ltags, ":h")
+
+		let l:vimtagsup = l:ltagsdir . "/.vimtagsup"
+		if !filereadable(l:vimtagsup)
+			call writefile(["ctags -R ."], l:vimtagsup)
+		endif
 	endif
 endfu
 
@@ -58,11 +65,16 @@ endfu
 fu MyUpdateTags(silent)
 	if exists("g:ltags")
 		let l:ltagsdir = fnamemodify(g:ltags, ":h")
+		let l:vimtagsup = l:ltagsdir . "/.vimtagsup"
+
 		let l:ltags_cmd = "ctags -R ."
-		if exists("g:ltags_cmd")
+		if filereadable(l:vimtagsup)
+			let l:ltags_cmd = "/bin/sh " . l:vimtagsup
+		elseif exists("g:ltags_cmd")
 			let l:ltags_cmd = g:ltags_cmd
 		endif
-		exec "!cd " . l:ltagsdir . " && " . l:ltags_cmd
+
+		silent exec "!cd " . l:ltagsdir . " && " . l:ltags_cmd
 	elseif !a:silent
 		echom "g:ltags is not defined"
 	endif

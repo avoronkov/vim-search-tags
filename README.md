@@ -26,6 +26,8 @@ and provide the following command:
 
 `:Ltags` - update tags file
 
+File `.vimtagsup` contains command to update the tags - you can easily modify it to achieve the better effect.
+
 Install
 -------
 
